@@ -89,3 +89,11 @@ test {
     // Use junit platform for unit tests
     useJUnitPlatform()
 }
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+}
