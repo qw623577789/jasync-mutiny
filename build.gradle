@@ -8,6 +8,7 @@
 
 plugins {
     id 'java-library'
+    id 'maven-publish' //若想把源码一起打包，需要添加该插件
 }
 
 
