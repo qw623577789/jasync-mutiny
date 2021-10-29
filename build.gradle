@@ -8,7 +8,7 @@
 
 plugins {
     id 'java-library'
-    id 'maven-publish' //若想把源码一起打包，需要添加该插件
+    id 'maven-publish'
 }
 
 
@@ -41,37 +41,42 @@ dependencies {
 }
 
 compileJava {
-    // 把编译gradle编译后的东西拷到vscode项目调试目录
-    doLast {
-        delete 'bin'
-        copy {
-            from 'build/classes/java/main'
-            from 'build/resources/main'
-            into 'bin/main'
-        }
+    if(this.hasProperty("PATCH_VSCODE")) {
+        // 把编译gradle编译后的东西拷到vscode项目调试目录
+        doLast {
+            delete 'bin'
+            copy {
+                from 'build/classes/java/main'
+                from 'build/resources/main'
+                into 'bin/main'
+            }
 
-        copy {
-            from 'build/classes/java/test'
-            from 'build/resources/test'
-            into 'bin/test'
+            copy {
+                from 'build/classes/java/test'
+                from 'build/resources/test'
+                into 'bin/test'
+            }
         }
     }
 }
 
-compileTestJava {
-    // 把编译gradle编译后的东西拷到vscode项目调试目录
-    doLast {
-        delete 'bin'
-        copy {
-            from 'build/classes/java/main'
-            from 'build/resources/main'
-            into 'bin/main'
-        }
 
-        copy {
-            from 'build/classes/java/test'
-            from 'build/resources/test'
-            into 'bin/test'
+compileTestJava {
+    if(this.hasProperty("PATCH_VSCODE")) {
+        // 把编译gradle编译后的东西拷到vscode项目调试目录
+        doLast {
+            delete 'bin'
+            copy {
+                from 'build/classes/java/main'
+                from 'build/resources/main'
+                into 'bin/main'
+            }
+
+            copy {
+                from 'build/classes/java/test'
+                from 'build/resources/test'
+                into 'bin/test'
+            }
         }
     }
 }
