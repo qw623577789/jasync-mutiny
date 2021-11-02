@@ -702,7 +702,7 @@ public class LabelTest {
         }
     }
 
-    @Async(debug = true, logResultPosTree = true)
+    @Async(debug = true)
     public JPromise<Integer> forHasAwait2(int num) {
         int a = 0;
         label1:
@@ -853,3 +853,4 @@ public class LabelTest {
         }
     }
 }
+
