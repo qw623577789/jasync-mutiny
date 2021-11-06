@@ -98,5 +98,4 @@ public class IfTest {
         Assertions.assertEquals(3, ifTest5(1).block());
         Assertions.assertEquals(0, ifTest5(2).block());
     }
-
 }

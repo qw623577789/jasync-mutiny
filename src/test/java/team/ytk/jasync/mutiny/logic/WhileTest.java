@@ -3,6 +3,9 @@ package team.ytk.jasync.mutiny.logic;
 import io.github.vipcxj.jasync.spec.JAsync;
 import io.github.vipcxj.jasync.spec.JPromise;
 import io.github.vipcxj.jasync.spec.annotations.Async;
+
+import java.util.ArrayList;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -50,6 +53,29 @@ public class WhileTest {
             j = 0;
         }
         return JAsync.just(res);
+    }
+
+    @Async
+    public JPromise<Void> forEach() {
+        ArrayList<Long> list = new ArrayList<>() {
+            {
+                add(1l);
+                add(2l);
+            }
+        };
+
+        for (Long l : list) {
+            JAsync.just().await();
+            if (1==1) continue;
+            
+        }
+
+        return JAsync.just();
+    }
+    
+    @Test
+    public void forEachTest() {
+        Assertions.assertEquals(null, forEach().block());
     }
 
     @Test

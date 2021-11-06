@@ -119,7 +119,11 @@ public class UniPromise<T> implements JPromise<T> {
     ) {
         return new UniPromise<>(
             uni
-                .onFailure(t -> exceptionsType.stream().anyMatch(e -> e.isAssignableFrom(t.getClass())))
+                .onFailure(
+                    t -> {
+                        return exceptionsType.stream().anyMatch(e -> e.isAssignableFrom(t.getClass()));
+                    }
+                )
                 .recoverWithUni(
                     t -> {
                         if (processInnerExceptions && JAsync.mustRethrowException(t, exceptionsType)) {
@@ -164,40 +168,54 @@ public class UniPromise<T> implements JPromise<T> {
         AtomicReference<T> ref
     )
         throws Throwable {
-        return Utils
-            .safeApply(body, ref.get())
-            .then(
-                a -> {
-                    ref.set(a);
-                    return null;
-                }
-            )
-            .doCatch(
-                ContinueException.class,
-                e -> {
-                    if (e.matchLabel(label)) {
+        try {
+            return Utils
+                .safeApply(body, ref.get())
+                .then(
+                    a -> {
+                        ref.set(a);
                         return null;
                     }
-                    return JAsync.error(e);
-                }
-            )
-            .unwrap(Uni.class);
+                )
+                .doCatch(
+                    ContinueException.class,
+                    e -> {
+                        if (e.matchLabel(label)) {
+                            return null;
+                        }
+                        return JAsync.error(e);
+                    }
+                )
+                .unwrap(Uni.class);
+        } catch (ContinueException e) {
+            if (e.matchLabel(label)) {
+                return JAsync.just(null).unwrap(Uni.class);
+            }
+            return JAsync.error(e).unwrap(Uni.class);
+        }
     }
 
     private Uni<? extends Integer> doWhileBody(VoidPromiseSupplier body, String label) throws Throwable {
-        return Utils
-            .safeGetVoid(body)
-            .then(a -> null)
-            .doCatch(
-                ContinueException.class,
-                e -> {
-                    if (e.matchLabel(label)) {
-                        return null;
+        try {
+            return Utils
+                .safeGetVoid(body)
+                .then(a -> null)
+                .doCatch(
+                    ContinueException.class,
+                    e -> {
+                        if (e.matchLabel(label)) {
+                            return null;
+                        }
+                        return JAsync.error(e);
                     }
-                    return JAsync.error(e);
-                }
-            )
-            .unwrap(Uni.class);
+                )
+                .unwrap(Uni.class);
+        } catch (ContinueException e) {
+            if (e.matchLabel(label)) {
+                return JAsync.just(null).unwrap(Uni.class);
+            }
+            return JAsync.error(e).unwrap(Uni.class);
+        }
     }
 
     @Override
@@ -260,9 +278,17 @@ public class UniPromise<T> implements JPromise<T> {
                                 }
                             )
                             .repeat()
-                            .until(i -> i != null)
+                            .until(
+                                i -> {
+                                    return i != null;
+                                }
+                            )
                             .toUni()
-                            .flatMap(v -> Uni.createFrom().nullItem())
+                            .flatMap(
+                                v -> {
+                                    return Uni.createFrom().nullItem();
+                                }
+                            )
                     )
             )
             .doCatch(
