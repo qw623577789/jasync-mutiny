@@ -13,7 +13,7 @@ plugins {
 
 
 group = "team.ytk"
-version = "1.0.4"
+version = "1.0.5"
 sourceCompatibility = 11
 
 repositories {
@@ -23,13 +23,13 @@ repositories {
 
 
 dependencies {
-    api 'io.github.vipcxj:jasync-core:0.1.7'
+    api 'io.github.vipcxj:jasync-core:0.1.8'
     implementation 'io.smallrye.reactive:mutiny:1.1.2'
     implementation 'org.projectlombok:lombok:1.18.22'
 
     // 普通编译时ADT
     annotationProcessor 'org.projectlombok:lombok:1.18.22'
-    annotationProcessor 'io.github.vipcxj:jasync-core:0.1.7'
+    annotationProcessor 'io.github.vipcxj:jasync-core:0.1.8'
 
 
     // Use JUnit Jupiter for testing.
@@ -37,7 +37,7 @@ dependencies {
 
     // 测试时ADT
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.22'
-    testAnnotationProcessor 'io.github.vipcxj:jasync-core:0.1.7'
+    testAnnotationProcessor 'io.github.vipcxj:jasync-core:0.1.8'
 
 
 }
