@@ -1,4 +1,4 @@
-package team.ytk.jasync.mutiny;
+package team.qtk.jasync.mutiny;
 
 import io.github.vipcxj.jasync.spec.Handle;
 import io.smallrye.mutiny.subscription.Cancellable;
@@ -10,9 +10,7 @@ public class DisposableHandle implements Handle {
 
     private boolean isCanceled = false;
 
-    private final Runnable onCancellation = () -> {
-        this.isCanceled = true;
-    };
+    private final Runnable onCancellation = () -> this.isCanceled = true;
 
     public DisposableHandle(Function<Runnable, Cancellable> handler) {
         this.cancellable = handler.apply(onCancellation);

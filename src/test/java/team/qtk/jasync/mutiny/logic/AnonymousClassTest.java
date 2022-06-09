@@ -1,4 +1,4 @@
-package team.ytk.jasync.mutiny.logic;
+package team.qtk.jasync.mutiny.logic;
 
 import io.github.vipcxj.jasync.spec.JAsync;
 import io.github.vipcxj.jasync.spec.JPromise;
@@ -13,7 +13,7 @@ public class AnonymousClassTest {
     @Async
     private JPromise<String> validAwaitInAnonymousClassShouldTransform(String input) {
         //noinspection Convert2Lambda
-        Supplier<JPromise<String>> supplier = new Supplier<JPromise<String>>() {
+        Supplier<JPromise<String>> supplier = new Supplier<>() {
             @Override
             public JPromise<String> get() {
                 String helloWorld = JAsync.just("Hello World").await();

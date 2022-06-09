@@ -1,4 +1,4 @@
-package team.ytk.jasync.mutiny.logic;
+package team.qtk.jasync.mutiny.logic;
 
 import io.github.vipcxj.jasync.spec.JAsync;
 import io.github.vipcxj.jasync.spec.JPromise;
@@ -59,23 +59,23 @@ public class WhileTest {
     public JPromise<Void> forEach() {
         ArrayList<Long> list = new ArrayList<>() {
             {
-                add(1l);
-                add(2l);
+                add(1L);
+                add(2L);
             }
         };
 
         for (Long l : list) {
             JAsync.just().await();
-            if (1==1) continue;
-            
+            if (1 == 1) continue;
+
         }
 
         return JAsync.just();
     }
-    
+
     @Test
     public void forEachTest() {
-        Assertions.assertEquals(null, forEach().block());
+        Assertions.assertNull(forEach().block());
     }
 
     @Test

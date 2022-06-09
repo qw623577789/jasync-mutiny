@@ -1,10 +1,12 @@
-package team.ytk.jasync.mutiny.logic;
+package team.qtk.jasync.mutiny.logic;
 
 import io.github.vipcxj.jasync.spec.JAsync;
 import io.github.vipcxj.jasync.spec.JPromise;
 import io.github.vipcxj.jasync.spec.annotations.Async;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import java.util.Objects;
 
 public class IfTest {
 
@@ -62,7 +64,7 @@ public class IfTest {
             return JAsync.just("1");
         } else if (JAsync.just(i).await() == 2) {
             return JAsync.just("2");
-        } else if (JAsync.just(i).await() == JAsync.just(3).await()) {
+        } else if (Objects.equals(JAsync.just(i).await(), JAsync.just(3).await())) {
             return JAsync.just("3");
         } else if (i == 4) {
             return JAsync.just("4");

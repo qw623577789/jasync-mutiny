@@ -1,4 +1,4 @@
-package team.ytk.jasync.mutiny;
+package team.qtk.jasync.mutiny;
 
 import io.github.vipcxj.jasync.runtime.helpers.ArrayIterator;
 import io.github.vipcxj.jasync.spec.*;
@@ -6,10 +6,12 @@ import io.github.vipcxj.jasync.spec.catcher.Catcher;
 import io.github.vipcxj.jasync.spec.functional.*;
 import io.github.vipcxj.jasync.spec.switchexpr.ICase;
 import io.smallrye.mutiny.Uni;
+
 import java.time.Duration;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -89,27 +91,27 @@ public class UniPromise<T> implements JPromise<T> {
     @SuppressWarnings("unchecked")
     public JPromise<T> doCatch(List<Catcher<?, T>> catchers) {
         return this.doCatch(
-                Collections.singletonList(Throwable.class),
-                t -> {
-                    List<? extends Class<? extends Throwable>> exceptionsType = catchers
-                        .stream()
-                        .map(Catcher::getExceptionType)
-                        .collect(Collectors.toList());
-                    if (JAsync.mustRethrowException(t, exceptionsType)) {
-                        return JAsync.error(t);
+            Collections.singletonList(Throwable.class),
+            t -> {
+                List<? extends Class<? extends Throwable>> exceptionsType = catchers
+                    .stream()
+                    .map(Catcher::getExceptionType)
+                    .collect(Collectors.toList());
+                if (JAsync.mustRethrowException(t, exceptionsType)) {
+                    return JAsync.error(t);
+                }
+                for (Catcher<?, T> catcher : catchers) {
+                    if (catcher.match(t)) {
+                        //noinspection unchecked
+                        PromiseFunction<Throwable, T> reject = (PromiseFunction<Throwable, T>) catcher.getReject();
+                        JPromise<T> res = reject != null ? reject.apply(t) : null;
+                        return res != null ? res : JAsync.just();
                     }
-                    for (Catcher<?, T> catcher : catchers) {
-                        if (catcher.match(t)) {
-                            //noinspection unchecked
-                            PromiseFunction<Throwable, T> reject = (PromiseFunction<Throwable, T>) catcher.getReject();
-                            JPromise<T> res = reject != null ? reject.apply(t) : null;
-                            return res != null ? res : JAsync.just();
-                        }
-                    }
-                    return null;
-                },
-                false
-            );
+                }
+                return null;
+            },
+            false
+        );
     }
 
     private JPromise<T> doCatch(
@@ -120,9 +122,7 @@ public class UniPromise<T> implements JPromise<T> {
         return new UniPromise<>(
             uni
                 .onFailure(
-                    t -> {
-                        return exceptionsType.stream().anyMatch(e -> e.isAssignableFrom(t.getClass()));
-                    }
+                    t -> exceptionsType.stream().anyMatch(e -> e.isAssignableFrom(t.getClass()))
                 )
                 .recoverWithUni(
                     t -> {
@@ -240,7 +240,7 @@ public class UniPromise<T> implements JPromise<T> {
                                 }
                             )
                             .repeat()
-                            .until(i -> i != null)
+                            .until(Objects::nonNull)
                             .toUni()
                             .map(AtomicReference::get)
                     );
@@ -278,17 +278,9 @@ public class UniPromise<T> implements JPromise<T> {
                                 }
                             )
                             .repeat()
-                            .until(
-                                i -> {
-                                    return i != null;
-                                }
-                            )
+                            .until(Objects::nonNull)
                             .toUni()
-                            .flatMap(
-                                v -> {
-                                    return Uni.createFrom().nullItem();
-                                }
-                            )
+                            .flatMap(v -> Uni.createFrom().nullItem())
                     )
             )
             .doCatch(
@@ -339,7 +331,7 @@ public class UniPromise<T> implements JPromise<T> {
                                 }
                             )
                             .repeat()
-                            .until(i -> i != null)
+                            .until(Objects::nonNull)
                             .toUni()
                             .map(AtomicReference::get)
                     );
@@ -392,7 +384,7 @@ public class UniPromise<T> implements JPromise<T> {
                                 }
                             )
                             .repeat()
-                            .until(i -> i != null)
+                            .until(Objects::nonNull)
                             .toUni()
                             .flatMap(v -> Uni.createFrom().nullItem())
                     )
@@ -414,13 +406,13 @@ public class UniPromise<T> implements JPromise<T> {
         String label
     ) {
         return this.doWhileVoid(
-                iterator::hasNext,
-                () -> {
-                    E next = iterator.next();
-                    return Utils.safeApply(block, next);
-                },
-                label
-            );
+            iterator::hasNext,
+            () -> {
+                E next = iterator.next();
+                return Utils.safeApply(block, next);
+            },
+            label
+        );
     }
 
     @Override
@@ -446,13 +438,13 @@ public class UniPromise<T> implements JPromise<T> {
         AtomicInteger index = new AtomicInteger();
         int length = array.length;
         return this.doWhileVoid(
-                () -> index.get() < length,
-                () -> {
-                    boolean next = array[index.getAndIncrement()];
-                    return Utils.safeApply(block, next);
-                },
-                label
-            );
+            () -> index.get() < length,
+            () -> {
+                boolean next = array[index.getAndIncrement()];
+                return Utils.safeApply(block, next);
+            },
+            label
+        );
     }
 
     @Override
@@ -460,13 +452,13 @@ public class UniPromise<T> implements JPromise<T> {
         AtomicInteger index = new AtomicInteger();
         int length = array.length;
         return this.doWhileVoid(
-                () -> index.get() < length,
-                () -> {
-                    byte next = array[index.getAndIncrement()];
-                    return Utils.safeApply(block, next);
-                },
-                label
-            );
+            () -> index.get() < length,
+            () -> {
+                byte next = array[index.getAndIncrement()];
+                return Utils.safeApply(block, next);
+            },
+            label
+        );
     }
 
     @Override
@@ -474,13 +466,13 @@ public class UniPromise<T> implements JPromise<T> {
         AtomicInteger index = new AtomicInteger();
         int length = array.length;
         return this.doWhileVoid(
-                () -> index.get() < length,
-                () -> {
-                    char next = array[index.getAndIncrement()];
-                    return Utils.safeApply(block, next);
-                },
-                label
-            );
+            () -> index.get() < length,
+            () -> {
+                char next = array[index.getAndIncrement()];
+                return Utils.safeApply(block, next);
+            },
+            label
+        );
     }
 
     @Override
@@ -488,13 +480,13 @@ public class UniPromise<T> implements JPromise<T> {
         AtomicInteger index = new AtomicInteger();
         int length = array.length;
         return this.doWhileVoid(
-                () -> index.get() < length,
-                () -> {
-                    short next = array[index.getAndIncrement()];
-                    return Utils.safeApply(block, next);
-                },
-                label
-            );
+            () -> index.get() < length,
+            () -> {
+                short next = array[index.getAndIncrement()];
+                return Utils.safeApply(block, next);
+            },
+            label
+        );
     }
 
     @Override
@@ -502,13 +494,13 @@ public class UniPromise<T> implements JPromise<T> {
         AtomicInteger index = new AtomicInteger();
         int length = array.length;
         return this.doWhileVoid(
-                () -> index.get() < length,
-                () -> {
-                    int next = array[index.getAndIncrement()];
-                    return Utils.safeApply(block, next);
-                },
-                label
-            );
+            () -> index.get() < length,
+            () -> {
+                int next = array[index.getAndIncrement()];
+                return Utils.safeApply(block, next);
+            },
+            label
+        );
     }
 
     @Override
@@ -516,13 +508,13 @@ public class UniPromise<T> implements JPromise<T> {
         AtomicInteger index = new AtomicInteger();
         int length = array.length;
         return this.doWhileVoid(
-                () -> index.get() < length,
-                () -> {
-                    long next = array[index.getAndIncrement()];
-                    return Utils.safeApply(block, next);
-                },
-                label
-            );
+            () -> index.get() < length,
+            () -> {
+                long next = array[index.getAndIncrement()];
+                return Utils.safeApply(block, next);
+            },
+            label
+        );
     }
 
     @Override
@@ -530,13 +522,13 @@ public class UniPromise<T> implements JPromise<T> {
         AtomicInteger index = new AtomicInteger();
         int length = array.length;
         return this.doWhileVoid(
-                () -> index.get() < length,
-                () -> {
-                    float next = array[index.getAndIncrement()];
-                    return Utils.safeApply(block, next);
-                },
-                label
-            );
+            () -> index.get() < length,
+            () -> {
+                float next = array[index.getAndIncrement()];
+                return Utils.safeApply(block, next);
+            },
+            label
+        );
     }
 
     @Override
@@ -548,13 +540,13 @@ public class UniPromise<T> implements JPromise<T> {
         AtomicInteger index = new AtomicInteger();
         int length = array.length;
         return this.doWhileVoid(
-                () -> index.get() < length,
-                () -> {
-                    double next = array[index.getAndIncrement()];
-                    return Utils.safeApply(block, next);
-                },
-                label
-            );
+            () -> index.get() < length,
+            () -> {
+                double next = array[index.getAndIncrement()];
+                return Utils.safeApply(block, next);
+            },
+            label
+        );
     }
 
     @Override
@@ -570,15 +562,15 @@ public class UniPromise<T> implements JPromise<T> {
                     if (matched) {
                         result =
                             (result != null ? result : this).then(
-                                    () -> {
-                                        try {
-                                            VoidPromiseSupplier body = aCase.getBody();
-                                            return Utils.safeGetVoid(body);
-                                        } catch (Throwable t) {
-                                            return JAsync.error(t);
-                                        }
+                                () -> {
+                                    try {
+                                        VoidPromiseSupplier body = aCase.getBody();
+                                        return Utils.safeGetVoid(body);
+                                    } catch (Throwable t) {
+                                        return JAsync.error(t);
                                     }
-                                );
+                                }
+                            );
                     }
                 }
                 if (matched) {
@@ -589,14 +581,14 @@ public class UniPromise<T> implements JPromise<T> {
 
         return result != null
             ? result.doCatch(
-                BreakException.class,
-                e -> {
-                    if (e.matchLabel(label)) {
-                        return null;
-                    }
-                    return JAsync.error(e);
+            BreakException.class,
+            e -> {
+                if (e.matchLabel(label)) {
+                    return null;
                 }
-            )
+                return JAsync.error(e);
+            }
+        )
             : JAsync.just();
     }
 
@@ -655,9 +647,8 @@ public class UniPromise<T> implements JPromise<T> {
     @Override
     public Handle async() {
         return new DisposableHandle(
-            cancelCallback -> {
-                return uni.onCancellation().invoke(() -> cancelCallback.run()).subscribe().with(v -> {});
-            }
+            cancelCallback -> uni.onCancellation().invoke(cancelCallback).subscribe().with(v -> {
+            })
         );
     }
 

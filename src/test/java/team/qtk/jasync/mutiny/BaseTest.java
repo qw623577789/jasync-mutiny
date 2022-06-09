@@ -1,4 +1,4 @@
-package team.ytk.jasync.mutiny;
+package team.qtk.jasync.mutiny;
 
 import io.github.vipcxj.jasync.spec.Handle;
 import io.github.vipcxj.jasync.spec.JAsync;
@@ -6,7 +6,9 @@ import io.github.vipcxj.jasync.spec.JPromise;
 import io.github.vipcxj.jasync.spec.annotations.Async;
 import io.smallrye.mutiny.TimeoutException;
 import io.smallrye.mutiny.Uni;
+
 import java.time.Duration;
+
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -25,7 +27,7 @@ public class BaseTest {
     }
 
     @Async //有await操作的话，必须加上这个
-    private JPromise<String> asyncTest() throws Exception {
+    private JPromise<String> asyncTest() {
         // 异步等待方式，输出hello world in async!
         System.out.println(this.helloAsync().await());
 

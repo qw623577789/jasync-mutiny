@@ -6,7 +6,7 @@ Jasync-mutiny
 ## 用法
 ```java
 // Uni<T> => JPromise<T>
-JPromise<T> xxJPromise = team.ytk.jasync.mutiny.Promises.from(io.smallrye.mutiny.Uni<T>)
+JPromise<T> xxJPromise = team.qtk.jasync.mutiny.Promises.from(io.smallrye.mutiny.Uni<T>)
 
 // JPromise<T> => Uni<T>
 Uni xxUni = xxJPromise.unwrap(Uni.class);
@@ -64,5 +64,3 @@ String result = awaitTest().block(Duration.ofSeconds(1));
 
 ## 提示
 - 本组件不支持ecj编译器，所以非idea打开工程的话，记得先使用gradle/maven进行编译后，再运行或者调试
-- 由于vscode写java比较爽，但vscode-java使用ejc编译器，故进行需要安装改造后的[Test Runner for Java
-](https://github.com/qw623577789/vscode-java-test)插件以支持在vscode里运行或者调试, 配置详情见``.vscode``文件夹里的配置

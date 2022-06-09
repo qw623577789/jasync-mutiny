@@ -1,4 +1,4 @@
-package team.ytk.jasync.mutiny.logic;
+package team.qtk.jasync.mutiny.logic;
 
 import io.github.vipcxj.jasync.spec.JAsync;
 import io.github.vipcxj.jasync.spec.JPromise;
@@ -28,7 +28,7 @@ public class AwaitTest {
         return JAsync.just(a + b);
     }
 
-    private JPromise<Integer> mul(int a , int b) {
+    private JPromise<Integer> mul(int a, int b) {
         return JAsync.just(a * b);
     }
 
@@ -40,7 +40,7 @@ public class AwaitTest {
 
     @Test
     public void testSimpleAwait() {
-        Assertions.assertEquals("hello world", simpleAwait().block());;
+        Assertions.assertEquals("hello world", simpleAwait().block());
     }
 
     private int nestedNoAwait1() {
@@ -50,8 +50,8 @@ public class AwaitTest {
     @Async
     private JPromise<Integer> nestedAwait1() {
         int res = 1 + plus(one().await(), plus(3, two().await()).await()).await()
-                + zero().await()
-                +  mul(three().await(), 4).await();
+            + zero().await()
+            + mul(three().await(), 4).await();
         return JAsync.just(res);
     }
 

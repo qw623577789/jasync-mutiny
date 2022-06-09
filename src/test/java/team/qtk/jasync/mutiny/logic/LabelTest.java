@@ -1,4 +1,4 @@
-package team.ytk.jasync.mutiny.logic;
+package team.qtk.jasync.mutiny.logic;
 
 import io.github.vipcxj.jasync.spec.JAsync;
 import io.github.vipcxj.jasync.spec.JPromise;
